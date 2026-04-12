@@ -1,0 +1,32 @@
+name: Vote Tracker
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run script
+        run: python vote_tracker.py
+
+      - name: Save CSV
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add votes.csv
+          git commit -m "update votes" || echo "no changes"
+          git push
